@@ -1,0 +1,40 @@
+// Usage of cmatrix, the complex Matrix routines
+#include "MatrixC.h"
+
+int main()
+{
+     // Start random number generator 
+     Rand_Open(0);
+     // Size of matrices to be used
+     long N=6;
+     MatrixC A(N);
+     
+     // Generate a random self-adjoint matrix
+     for (long i=1;i<=N;i++)
+     {
+	  A(i,i)=Rand();
+	  for (long j=i+1;j<=N;j++)
+	  {
+	       A(i,j)=Rand()+M_I*Rand();
+	       A(j,i)=conj(A(i,j));
+	  }
+     }
+     printf("Original matrix:\n");
+     A.Write();
+     // Now, diagonalize it!
+     MatrixC Basis; Vector Eigen;
+     A.Diagonalize(Basis,Eigen);
+     printf("Eigenvalues:\n");
+     Eigen.Write();
+     printf("Eigenvectors:\n");
+     Basis.Write();
+     MatrixC At=Basis*Diag(Eigen)*Herm(Basis);
+     printf("Diagonalize Error: %16.12g\n",Norm(At-A));
+     
+     // Check the inverse matrix
+     MatrixC Ainv=Invert(A);
+     printf("Inverse:\n");
+     Ainv.Write();
+     printf("Inverse error: %g\n",Norm(Ainv*A-Unit(N)));
+
+}
