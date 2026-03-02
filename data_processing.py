@@ -22,7 +22,7 @@ import re
 def plot_correlation_matrix(filename = "correlation.txt"):
     try:
         #Load Data
-        correlation = np.loadtxt(filename)
+        correlation = np.loadtxt("data/"+filename)
         # print(correlation)
 
         rows,cols = correlation.shape
@@ -65,7 +65,7 @@ def plot_correlation_matrix(filename = "correlation.txt"):
 def plot_energy_gap(filename = "energy_gap.txt"):
     try:
         # Load data
-        energy_gap = np.loadtxt(filename)
+        energy_gap = np.loadtxt("data/"+filename)
         length = len(energy_gap)
         x = np.arange(1,length+1)
         print(f"Loaded Vector of size: {length}")
@@ -109,7 +109,7 @@ def plot_energy_gap(filename = "energy_gap.txt"):
 def plot_entanglement_entropy (filename = "entropy.txt"):
     try:
         # Load data
-        entropy = np.loadtxt(filename)
+        entropy = np.loadtxt("data/"+filename)
         l_ent = len(entropy)
         x = np.arange(1,l_ent+1)
         print(f"loaded vector of size: {l_ent}")
@@ -153,11 +153,11 @@ def parse_multi_matrix_file(filename):
     # Regex to find header like "# 14 14"
     header_pattern = re.compile(r'^#\s+(\d+)\s+(\d+)')
 
-    if not os.path.exists(filename):
+    if not os.path.exists("data/"+filename):
         print(f"Error: File {filename} not found.")
         return []
 
-    with open(filename, 'r') as f:
+    with open("data/"+filename, 'r') as f:
         for line in f:
             line = line.strip()
             if not line: continue # Skip empty lines
@@ -233,9 +233,9 @@ def plot_all_matrices(matrices):
         ax.set_ylabel("Site i")
         
         # Save each plot uniquely
-        # savename = f"correlation_plot_{i}_size_{rows}.png"
-        # plt.savefig(savename)
-        # print(f"Saved {savename}")
+        savename = f"correlation_plot_{i}_size_{rows}.png"
+        plt.savefig("images/"+savename)
+        print(f"Saved {savename}")
         plt.show()
         plt.close(fig) # Close memory
 
@@ -264,11 +264,11 @@ def parse_multi_vector_file(filename):
     # CHANGED: Regex now looks for a '#' followed by just ONE integer
     header_pattern = re.compile(r'^#\s+(\d+)')
 
-    if not os.path.exists(filename):
+    if not os.path.exists("data/"+filename):
         print(f"Error: File '{filename}' not found.")
         return []
 
-    with open(filename, 'r') as f:
+    with open("data/"+filename, 'r') as f:
         for line in f:
             line = line.strip()
             if not line: continue 
@@ -347,14 +347,14 @@ def plot_all_energies(matrices):
     plt.grid(True, which='major', axis='y', linestyle='-', alpha=0.2)
 
     # Save and show
-    plt.savefig("fibonacci_spectrum.png", dpi=300)
+    plt.savefig("images/fibonacci_spectrum.png", dpi=300)
     print("Plot saved to fibonacci_spectrum.png")
     plt.show()
 
 def plot_two_point_correlation(filename):
     try:
         # Load data
-        correlation = np.loadtxt(filename)
+        correlation = np.loadtxt("data/"+filename)
         N = correlation.shape[0] // 2 # Since we only have N/2 values in the file
         two_point = np.abs(correlation[N-1][N:N*2-0:2]) # Extract the N/2-th row (0-indexed), and every 2nd element
         # two_point = np.abs(correlation[N-1][N:N*2-0]) # Extract the N/2-th row (0-indexed)
@@ -378,7 +378,7 @@ def plot_two_point_correlation(filename):
 def plot_ipr(filename):
     try:
         # Load data
-        ipr = np.loadtxt(filename)
+        ipr = np.loadtxt("data/"+filename)
         N = ipr.size  
         print(f"Loaded IPR vector of size: {ipr.size}")
         # print(ipr)
@@ -406,7 +406,7 @@ def plot_ipr(filename):
 def plot_ground_state(filename):
     try:
         # Load data
-        eigenvectors = np.loadtxt(filename)
+        eigenvectors = np.loadtxt("data/"+filename)
         ground_state = eigenvectors[:][0] # First column is the ground state
         N = ground_state.size  
         print(f"Loaded Ground State vector of size: {N}")
@@ -430,8 +430,8 @@ def plot_ground_state(filename):
 def plot_gap_ratio(filename1,filename2):
     try:
         # Load data
-        gap_energy = np.loadtxt(filename1)
-        gap_ratio = np.loadtxt(filename2)
+        gap_energy = np.loadtxt("data/"+filename1)
+        gap_ratio = np.loadtxt("data/"+filename2)
         N = gap_ratio.size  
         print(f"Loaded Gap Ratio vector of size: {N}")
 
@@ -458,7 +458,7 @@ def plot_gap_ratio(filename1,filename2):
 def plot_histogram_gap_ratio(filename):
     try:
         # Load data
-        r_vals = np.loadtxt(filename)
+        r_vals = np.loadtxt("data/"+filename)
         r_mean = np.mean(r_vals)
         N = r_vals.size
 
@@ -482,7 +482,7 @@ def plot_histogram_gap_ratio(filename):
         plt.legend()
         plt.grid(True, alpha=0.3)
         
-        plt.savefig(f"level_statistics_N{N}.png", dpi=300)
+        plt.savefig(f"images/level_statistics_N{N}.png", dpi=300)
         plt.show()
 
     except Exception as e:

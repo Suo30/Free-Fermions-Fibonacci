@@ -1,0 +1,6 @@
+# Data files to ignore
+data/
+images/
+
+# Python Environment
+venv/
