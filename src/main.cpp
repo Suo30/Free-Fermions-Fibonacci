@@ -11,7 +11,7 @@
                             Global Variables
  -----------------------------------------------------------------------------*/
 
-long N = 22;
+long N = 90;
 double W = 0;
 long P = N/2;
 
@@ -26,7 +26,7 @@ double h = 0.1;
 long minn = 1;
 long maxn = 378; //2,"3",'4',6,"9",14,22,"35",'56',90,"145",234,378,"611",'988',1598,"2585",4182
 long minf = 6;
-long maxf = 16;
+long maxf = 1598;
 long
 long l = 7;
 
@@ -44,7 +44,7 @@ Vector Gap_vs_Sigma(double mins, double maxs, long N, double W, string boundary,
         EGap(i+1) = Energy_gap(Eigen, N, N/2);
         // Eigen.Write();
     }
-    EGap.Save("energy_gap_s.txt");
+    EGap.Save("data/energy_gap_s.txt");
     return EGap;
     
 }
@@ -66,17 +66,17 @@ int main()
     H = Chain_H(N,W,boundary,chain,J,sigma,h);
     Vector Eigen; Matrix Basis;
     H.Diagonalize(Basis,Eigen);
-    Basis.Save("eigenvectors.txt");
-    Eigen.Save("eigenvalues.txt");
+    Basis.Save("data/eigenvectors.txt");
+    Eigen.Save("data/eigenvalues.txt");
     
     C = Correlation(H,N,P);
-    C.Save("correlation.txt");
+    C.Save("data/correlation.txt");
 
     Gap = Gap_vs_N(minn,maxn,W,boundary,chain,J,sigma,h);
-    Gap.Save("energy_gap.txt");
+    Gap.Save("data/energy_gap.txt");
 
     EE = EE_vs_l(N,C,entropy_order);
-    EE.Save("entropy.txt");
+    EE.Save("data/entropy.txt");
 
     // long fib;
     // for (int i = 0;i<=15;i++){
@@ -105,14 +105,14 @@ int main()
             Gap_Ratio(i) = 1/Gap_Ratio(i);
         }
     }
-    Gaps.Save("energy_gap_vs_site.txt");
-    Gap_Ratio.Save("energy_gap_ratio_vs_site.txt");
+    Gaps.Save("data/energy_gap_vs_site.txt");
+    Gap_Ratio.Save("data/energy_gap_ratio_vs_site.txt");
 
     // Calculating the energy spectrum of Fibonacci for different lengths
     // Save multiple in a single file
     long fib;
-    FILE* filename = fopen("correlation_f.txt","wt");
-    FILE* fileenergy = fopen("eigenvalues.txt","wt");
+    FILE* filename = fopen("data/correlation_f.txt","wt");
+    FILE* fileenergy = fopen("data/eigenvalues_f.txt","wt");
     for (int i=minf;i<=maxf;i++){
         fib = Fibonacci_num(i);
         if (fib%2==1){
@@ -128,7 +128,7 @@ int main()
     }
     Vector IPR(Fibonacci_num(maxf)+1);
     IPR = Inverse_participation_ratio(N,W,boundary,chain,J,sigma,h,minf,maxf);
-    IPR.Save("inverse_participation_ratio.txt");
+    IPR.Save("data/inverse_participation_ratio.txt");
 
 
     // double winsize = 800;
