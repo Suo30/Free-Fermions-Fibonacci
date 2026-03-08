@@ -489,20 +489,43 @@ def plot_histogram_gap_ratio(filename):
         print(f"Error reading file: {e}")
         exit()
 
+def plot_density_function(filename):
+    try:
+        density = np.loadtxt(filename)
+        N = density.size
+        print(f"Loaded Density vector of size: {N}")
+
+        plt.figure(figsize=(8,6))
+        plt.plot(np.arange(1, N + 1), density, "brown", label="Density Function", markersize=5) 
+        plt.title("Density Function")
+        plt.xlabel("Site Index")
+        plt.ylabel("Density $\\rho(i)$")
+        plt.grid(True, which="both", linestyle="--", alpha=0.6)
+        plt.legend()
+        plt.show()
+
+    except Exception as e:
+        print(f"Error reading file: {e}")
+        exit()
+
 if __name__ == "__main__":
 
     plot_correlation_matrix("correlation.txt")
-    plot_ground_state("eigenvectors.txt")
-    plot_gap_ratio("energy_gap_vs_site.txt","energy_gap_ratio_vs_site.txt")
-    plot_histogram_gap_ratio("energy_gap_ratio_vs_site.txt")
-    plot_energy_gap("energy_gap.txt")
-    plot_energy_gap("energy_gap_s.txt")
-    plot_entanglement_entropy("entropy.txt")
-    plot_ipr("inverse_participation_ratio.txt")
-    plot_two_point_correlation("correlation.txt")
+    # plot_ground_state("eigenvectors.txt")
+    plot_density_function("density.txt")
 
-    plot_energy_spectrum("eigenvalues.txt")
+    # plot_gap_ratio("energy_gap_vs_site.txt","energy_gap_ratio_vs_site.txt")
+    # plot_histogram_gap_ratio("energy_gap_ratio_vs_site.txt")
 
-    plot_correlations("correlation_f.txt")
+    # plot_energy_gap("energy_gap.txt")
+    # plot_energy_gap("energy_gap_s.txt")
+    # plot_entanglement_entropy("entropy.txt")
+    # plot_ipr("inverse_participation_ratio.txt")
+
+    # plot_two_point_correlation("correlation.txt")
+
+    plot_energy_spectrum("eigenvalues_f.txt")
+
+    # plot_correlations("correlation_f.txt")
 
 

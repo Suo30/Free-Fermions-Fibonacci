@@ -105,7 +105,42 @@ Vector Fibonacci_rabbits(long N){
     return sequence;
 }
 
-Matrix Chain_H(long N, double W, string boundary, string chain, double J=1, double sigma=0.1, double h=1){
+long sturmian_num (long N, int k){
+    long N_0 = 0;
+    long N_1 = 1;
+    long sturmian;
+    
+    // Edge Cases
+    if (N <= 0) { return N_0; }
+    if (N == 1) { return N_1; }
+    
+    // Iterative addition
+    for (int i = 2; i <= N; i++){
+        // The generalized substitution rule: k copies of N_1, plus one N_0
+        sturmian = k * N_1 + N_0;
+        
+        // Shift variables for the next iteration
+        N_0 = N_1;
+        N_1 = sturmian;
+        
+        // std::cout << sturmian << std::endl;
+    }
+    
+    return sturmian;
+}
+
+Vector Sturmian_Sequence(long N, double theta){
+    Vector sequence(N);
+
+    if (N <= 0) return {};
+
+    for (int i=2; i<=N+1; i++){
+        sequence(i-1) = floor(i*theta) - floor((i-1)*theta);
+    }
+    return sequence;
+}
+
+Matrix Chain_H(long N, double W, string boundary, string chain, double J=1, double sigma=0.1, double h=1, double theta=0.6){
     Matrix H(N);
     if (chain == "uniform"){
         for(int i=1;i<N;i++){
@@ -174,6 +209,18 @@ Matrix Chain_H(long N, double W, string boundary, string chain, double J=1, doub
             H(1,N) = H(N,1) = J*sequence(1);
         }
     }
+    else if (chain == "sturmian"){
+        Vector sequence;
+        sequence = Sturmian_Sequence(N-1, theta);
+
+        for (int i=1; i<N; i++){
+            H(i,i+1) = H(i+1,i) = J*(1+pow(-sigma,sequence(i)));
+            H(i,i) = Rand(-W,W);
+        }
+        if (boundary == "PBC"){
+            H(1,N) = H(N,1) = J*sequence(1);
+        }
+    }
     
     return H;
 }
@@ -212,16 +259,16 @@ double Energy_gap(Vector V, long N, long P){
     return gap;
 }
 
-Vector Gap_vs_N(long minn, long maxn, double W, string boundary, string chain, double J=1, double sigma=0.1, double h=1){
+Vector Gap_vs_N(long minn, long maxn, double W, string boundary, string chain, double J=1, double sigma=0.1, double h=1, double theta=0.5){
     Vector EGap(maxn-minn+1);
-    long j;
+    long j = 0;
     for (int i=minn; j<maxn; i++){
-        if (chain == "fibonacci"){
+        if (chain == "fibonacci" || chain == "sturmian"){
             j = Fibonacci_num(i)+1;
         }
         else{j = i;}
         Matrix H(j);
-        H = Chain_H(j,W,boundary,chain,J,sigma,h);
+        H = Chain_H(j,W,boundary,chain,J,sigma,h,theta);
         Vector Eigen; Matrix Basis;
         H.Diagonalize(Basis,Eigen);
         EGap(j) = Energy_gap(Eigen, j, j/2);
@@ -304,15 +351,15 @@ double Get_IPR(long N, Matrix Basis){
     return IPR_total_avg; 
 }
 
-Vector Inverse_participation_ratio(long N, double W, string boundary, string chain, double J=1, double sigma=0.1, double h=1, long minf=1, long maxf=16){
-    if (chain == "fibonacci"){
+Vector Inverse_participation_ratio(long N, double W, string boundary, string chain, double J=1, double sigma=0.1, double h=1, double theta=0.5, long minf=1, long maxf=16){
+    if (chain == "fibonacci" || chain == "sturmian"){
         long fib;
         Vector IPR(Fibonacci_num(maxf)+1);
         for (int i=minf;i<=maxf;i++){
             fib = Fibonacci_num(i);
             if (fib%2==1){
                 Matrix H(fib+1);
-                H = Chain_H(fib+1,W,boundary,chain,J,sigma,h);
+                H = Chain_H(fib+1,W,boundary,chain,J,sigma,h,theta);
                 Matrix Basis; Vector Eigen;
                 H.Diagonalize(Basis, Eigen);
                 IPR(fib+1) = Get_IPR(fib+1,Basis);
@@ -336,3 +383,10 @@ Vector Inverse_participation_ratio(long N, double W, string boundary, string cha
 
 }
 
+Vector Density_Function(long N, Matrix C){
+    Vector density(N);
+    for (int i=1;i<=N;i++){
+        density(i) = C(i,i);
+    }
+    return density;
+}

@@ -10,34 +10,37 @@
  /*-----------------------------------------------------------------------------
                             Global Variables
  -----------------------------------------------------------------------------*/
+const double pi = 3.14159265358979323846;
+const double phi = (1 + sqrt(5)) / 2; // Golden ratio
+const double e = 2.71828182845904523536; // Euler's number
 
-long N = 90;
+long N = 22;
 double W = 0;
 long P = N/2;
 
 string boundary = "OBC";   // "PBC", "OBC"
-string chain = "fibonacci";   //"uniform", "dimerized", "rainbow", "random", "fibonacci"
+string chain = "sturmian";   //"uniform", "dimerized", "rainbow", "random", "fibonacci", "sturmian"
 string entropy_order = "forward"; //"forward", "backward", "center"
  
 double J = 1;
 double sigma = 0.3;
-double h = 0.1;
+double h = 0.3;
+double theta = 1/phi; 
 
 long minn = 1;
 long maxn = 378; //2,"3",'4',6,"9",14,22,"35",'56',90,"145",234,378,"611",'988',1598,"2585",4182
 long minf = 6;
-long maxf = 1598;
-long
+long maxf = 16;
 long l = 7;
 
  /*-----------------------------------------------------------------------------
                             Problem Variables
  -----------------------------------------------------------------------------*/
-Vector Gap_vs_Sigma(double mins, double maxs, long N, double W, string boundary, string chain){
+Vector Gap_vs_Sigma(double mins, double maxs, long N, double W, string boundary, string chain, double theta){
     Vector EGap(101);
     for (int i=0; i<=100; i++){
         Matrix H(N);
-        H = Chain_H(N,W,boundary,chain,sigma=i*maxs/100);
+        H = Chain_H(N,W,boundary,chain,sigma=i*maxs/100,theta=theta);
         Vector Eigen; Matrix Basis;
         H.Diagonalize(Basis,Eigen);
         // std::cout << i<<"-------------------------------------------------------------------" << std::endl;
@@ -62,18 +65,22 @@ int main()
     Matrix H(N);
     Vector Gap(maxn-minn);
     Vector EE(N);
+    Vector density(N);
 
-    H = Chain_H(N,W,boundary,chain,J,sigma,h);
+    H = Chain_H(N,W,boundary,chain,J,sigma,h,theta);
     Vector Eigen; Matrix Basis;
     H.Diagonalize(Basis,Eigen);
     Basis.Save("data/eigenvectors.txt");
     Eigen.Save("data/eigenvalues.txt");
     
     C = Correlation(H,N,P);
-    C.Save("data/correlation.txt");
+    C.Save("correlation.txt");
+
+    density = Density_Function(N,C);
+    density.Save("density.txt");
 
     Gap = Gap_vs_N(minn,maxn,W,boundary,chain,J,sigma,h);
-    Gap.Save("data/energy_gap.txt");
+    Gap.Save("energy_gap.txt");
 
     EE = EE_vs_l(N,C,entropy_order);
     EE.Save("data/entropy.txt");
@@ -90,7 +97,7 @@ int main()
 
 
     if (chain == "dimerized" || chain == "fibonacci"){
-        Gap_vs_Sigma(0,0.5,N,W,boundary,chain);
+        Gap_vs_Sigma(0,0.5,N,W,boundary,chain,theta);
         // EGap.Save("energy_gap_s.txt");
     }
 
@@ -118,7 +125,7 @@ int main()
         if (fib%2==1){
             Matrix H(fib+1);
             Matrix C(fib+1);
-            H = Chain_H(fib+1,W,boundary,chain,J,sigma,h);
+            H = Chain_H(fib+1,W,boundary,chain,J,sigma,h,theta);
             C = Correlation(H,fib+1,(fib+1)/2);
             Matrix Basis; Vector Eigen;
             H.Diagonalize(Basis, Eigen);
@@ -127,7 +134,7 @@ int main()
         }
     }
     Vector IPR(Fibonacci_num(maxf)+1);
-    IPR = Inverse_participation_ratio(N,W,boundary,chain,J,sigma,h,minf,maxf);
+    IPR = Inverse_participation_ratio(N,W,boundary,chain,J,sigma,h,theta,minf,maxf);
     IPR.Save("data/inverse_participation_ratio.txt");
 
 
