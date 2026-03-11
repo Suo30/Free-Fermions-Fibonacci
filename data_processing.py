@@ -22,7 +22,7 @@ import re
 def plot_correlation_matrix(filename = "correlation.txt"):
     try:
         #Load Data
-        correlation = np.loadtxt("data/"+filename)
+        correlation = np.loadtxt(filename)
         # print(correlation)
 
         rows,cols = correlation.shape
@@ -65,7 +65,7 @@ def plot_correlation_matrix(filename = "correlation.txt"):
 def plot_energy_gap(filename = "energy_gap.txt"):
     try:
         # Load data
-        energy_gap = np.loadtxt("data/"+filename)
+        energy_gap = np.loadtxt(filename)
         length = len(energy_gap)
         x = np.arange(1,length+1)
         print(f"Loaded Vector of size: {length}")
@@ -109,7 +109,7 @@ def plot_energy_gap(filename = "energy_gap.txt"):
 def plot_entanglement_entropy (filename = "entropy.txt"):
     try:
         # Load data
-        entropy = np.loadtxt("data/"+filename)
+        entropy = np.loadtxt(filename)
         l_ent = len(entropy)
         x = np.arange(1,l_ent+1)
         print(f"loaded vector of size: {l_ent}")
@@ -153,11 +153,11 @@ def parse_multi_matrix_file(filename):
     # Regex to find header like "# 14 14"
     header_pattern = re.compile(r'^#\s+(\d+)\s+(\d+)')
 
-    if not os.path.exists("data/"+filename):
+    if not os.path.exists(filename):
         print(f"Error: File {filename} not found.")
         return []
 
-    with open("data/"+filename, 'r') as f:
+    with open(filename, 'r') as f:
         for line in f:
             line = line.strip()
             if not line: continue # Skip empty lines
@@ -264,11 +264,11 @@ def parse_multi_vector_file(filename):
     # CHANGED: Regex now looks for a '#' followed by just ONE integer
     header_pattern = re.compile(r'^#\s+(\d+)')
 
-    if not os.path.exists("data/"+filename):
+    if not os.path.exists(filename):
         print(f"Error: File '{filename}' not found.")
         return []
 
-    with open("data/"+filename, 'r') as f:
+    with open(filename, 'r') as f:
         for line in f:
             line = line.strip()
             if not line: continue 
@@ -354,7 +354,7 @@ def plot_all_energies(matrices):
 def plot_two_point_correlation(filename):
     try:
         # Load data
-        correlation = np.loadtxt("data/"+filename)
+        correlation = np.loadtxt(filename)
         N = correlation.shape[0] // 2 # Since we only have N/2 values in the file
         two_point = np.abs(correlation[N-1][N:N*2-0:2]) # Extract the N/2-th row (0-indexed), and every 2nd element
         # two_point = np.abs(correlation[N-1][N:N*2-0]) # Extract the N/2-th row (0-indexed)
@@ -378,7 +378,7 @@ def plot_two_point_correlation(filename):
 def plot_ipr(filename):
     try:
         # Load data
-        ipr = np.loadtxt("data/"+filename)
+        ipr = np.loadtxt(filename)
         N = ipr.size  
         print(f"Loaded IPR vector of size: {ipr.size}")
         # print(ipr)
@@ -406,7 +406,7 @@ def plot_ipr(filename):
 def plot_ground_state(filename):
     try:
         # Load data
-        eigenvectors = np.loadtxt("data/"+filename)
+        eigenvectors = np.loadtxt(filename)
         ground_state = eigenvectors[:][0] # First column is the ground state
         N = ground_state.size  
         print(f"Loaded Ground State vector of size: {N}")
@@ -430,8 +430,8 @@ def plot_ground_state(filename):
 def plot_gap_ratio(filename1,filename2):
     try:
         # Load data
-        gap_energy = np.loadtxt("data/"+filename1)
-        gap_ratio = np.loadtxt("data/"+filename2)
+        gap_energy = np.loadtxt(filename1)
+        gap_ratio = np.loadtxt(filename2)
         N = gap_ratio.size  
         print(f"Loaded Gap Ratio vector of size: {N}")
 
@@ -458,7 +458,7 @@ def plot_gap_ratio(filename1,filename2):
 def plot_histogram_gap_ratio(filename):
     try:
         # Load data
-        r_vals = np.loadtxt("data/"+filename)
+        r_vals = np.loadtxt(filename)
         r_mean = np.mean(r_vals)
         N = r_vals.size
 
@@ -510,21 +510,21 @@ def plot_density_function(filename):
 
 if __name__ == "__main__":
 
-    plot_correlation_matrix("correlation.txt")
-    # plot_ground_state("eigenvectors.txt")
-    plot_density_function("density.txt")
+    plot_correlation_matrix("data/correlation.txt")
+    plot_ground_state("data/eigenvectors.txt")
+    plot_density_function("data/density.txt")
 
-    # plot_gap_ratio("energy_gap_vs_site.txt","energy_gap_ratio_vs_site.txt")
-    # plot_histogram_gap_ratio("energy_gap_ratio_vs_site.txt")
+    # plot_gap_ratio("data/energy_gap_vs_site.txt","data/energy_gap_ratio_vs_site.txt")
+    # plot_histogram_gap_ratio("data/energy_gap_ratio_vs_site.txt")
 
-    # plot_energy_gap("energy_gap.txt")
-    # plot_energy_gap("energy_gap_s.txt")
-    # plot_entanglement_entropy("entropy.txt")
-    # plot_ipr("inverse_participation_ratio.txt")
+    # plot_energy_gap("data/energy_gap.txt")
+    plot_energy_gap("data/energy_gap_s.txt")
+    # plot_entanglement_entropy("data/entropy.txt")
+    plot_ipr("data/inverse_participation_ratio.txt")
 
-    # plot_two_point_correlation("correlation.txt")
+    # plot_two_point_correlation("data/correlation.txt")
 
-    plot_energy_spectrum("eigenvalues_f.txt")
+    plot_energy_spectrum("data/eigenvalues_f.txt")
 
     # plot_correlations("correlation_f.txt")
 
