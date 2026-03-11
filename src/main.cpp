@@ -16,10 +16,10 @@ const double e = 2.71828182845904523536; // Euler's number
 
 long N = 90;
 double W = 0;
-long P = N/2 + 1;
+long P = N/2;
 
 string boundary = "OBC";   // "PBC", "OBC"
-string chain = "fibonacci";   //"uniform", "dimerized", "rainbow", "random", "fibonacci", "sturmian", "fib_57", "fib_59", "fib_711"
+string chain = "dimerized";   //"uniform", "dimerized", "rainbow", "random", "fibonacci", "sturmian", "fib_57", "fib_59", "fib_711"
 string entropy_order = "forward"; //"forward", "backward", "center"
  
 double J = 1;
@@ -120,6 +120,7 @@ int main()
     long fib;
     FILE* filename = fopen("data/correlation_f.txt","wt");
     FILE* fileenergy = fopen("data/eigenvalues_f.txt","wt");
+    FILE* fileenergyvssigma = fopen("data/eigenvalues_f_sigma.txt","wt");
     for (int i=minf;i<=maxf;i++){
         fib = Fibonacci_num(i);
         if (fib%2==1){
@@ -131,6 +132,13 @@ int main()
             H.Diagonalize(Basis, Eigen);
             C.Save(filename,"Hello");
             Eigen.Save(fileenergy);
+            if (chain == "dimerized" || chain == "fibonacci" || chain == "sturmian" || chain == "fib_57" || chain == "fib_59" || chain == "fib_711" || i>=maxf){
+                for (int j=0;j<=20;j++){
+                    H = Chain_H(fib+1,W,boundary,chain,J,sigma=j*0.5/20,h,theta);
+                    H.Diagonalize(Basis, Eigen);
+                    Eigen.Save(fileenergyvssigma);
+                }
+            }
         }
     }
     Vector IPR(Fibonacci_num(maxf)+1);
