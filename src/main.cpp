@@ -14,18 +14,18 @@ const double pi = 3.14159265358979323846;
 const double phi = (1 + sqrt(5)) / 2; // Golden ratio
 const double e = 2.71828182845904523536; // Euler's number
 
-long N = 22;
+long N = 90;
 double W = 0;
-long P = N/2;
+long P = N/2 + 1;
 
 string boundary = "OBC";   // "PBC", "OBC"
-string chain = "sturmian";   //"uniform", "dimerized", "rainbow", "random", "fibonacci", "sturmian"
+string chain = "fibonacci";   //"uniform", "dimerized", "rainbow", "random", "fibonacci", "sturmian", "fib_57", "fib_59", "fib_711"
 string entropy_order = "forward"; //"forward", "backward", "center"
  
 double J = 1;
 double sigma = 0.3;
 double h = 0.3;
-double theta = 1/phi; 
+double theta = 1/e; 
 
 long minn = 1;
 long maxn = 378; //2,"3",'4',6,"9",14,22,"35",'56',90,"145",234,378,"611",'988',1598,"2585",4182
@@ -74,13 +74,13 @@ int main()
     Eigen.Save("data/eigenvalues.txt");
     
     C = Correlation(H,N,P);
-    C.Save("correlation.txt");
+    C.Save("data/correlation.txt");
 
     density = Density_Function(N,C);
-    density.Save("density.txt");
+    density.Save("data/density.txt");
 
     Gap = Gap_vs_N(minn,maxn,W,boundary,chain,J,sigma,h);
-    Gap.Save("energy_gap.txt");
+    Gap.Save("data/energy_gap.txt");
 
     EE = EE_vs_l(N,C,entropy_order);
     EE.Save("data/entropy.txt");
@@ -93,12 +93,12 @@ int main()
 
     // Vector IPR(N);
     // IPR = Inverse_participation_ratio(N,H);
-    // IPR.Save("inverse_participation_ratio.txt");
+    // IPR.Save("data/inverse_participation_ratio.txt");
 
 
     if (chain == "dimerized" || chain == "fibonacci"){
         Gap_vs_Sigma(0,0.5,N,W,boundary,chain,theta);
-        // EGap.Save("energy_gap_s.txt");
+        // EGap.Save("data/energy_gap_s.txt");
     }
 
     Vector Gaps(N);

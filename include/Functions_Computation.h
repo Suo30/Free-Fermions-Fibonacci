@@ -140,6 +140,57 @@ Vector Sturmian_Sequence(long N, double theta){
     return sequence;
 }
 
+Vector Not_Fibonacci(long N, string chain){
+    Vector sequence (1);
+    Vector sequence1 (1);
+    Vector sequence2 (1);
+
+    if (chain == "fib_57"){
+        sequence1(1) = 1;
+        sequence1.Append(0);
+        sequence2 (1) = 1;
+        sequence2.Append(0);
+        sequence2.Append(1);
+        sequence2.Append(0);
+        sequence2.Append(1);
+        sequence2.Write();
+        std::cout << "Sequence 1: " << std::endl;
+    }
+
+    else if (chain == "fib_711"){
+        sequence1(1) = 0;
+        sequence2 (1) = 1;
+        sequence2.Append(0);
+        sequence2.Append(1);
+    }
+    else if (chain == "fib_59"){
+        sequence1(1) = 1;
+        sequence2 (1) = 1;
+        sequence2.Append(0);
+        sequence2.Append(1);
+        sequence2.Append(0);
+    }
+    else{
+        sequence1(1) = 0;
+        sequence2 (1) = 1;
+    }
+
+    // Edge Casees
+    if (N <= 0) return {};
+    if (N == 1) return {1};
+
+
+    //Iterative addition
+    for (int i=3;sequence.N<N;i++){
+        sequence = sequence2;
+        sequence.Append(sequence1);
+        sequence1 = sequence2;
+        sequence2 = sequence;
+    }
+    sequence.Write();
+    return sequence;
+}
+
 Matrix Chain_H(long N, double W, string boundary, string chain, double J=1, double sigma=0.1, double h=1, double theta=0.6){
     Matrix H(N);
     if (chain == "uniform"){
@@ -209,6 +260,19 @@ Matrix Chain_H(long N, double W, string boundary, string chain, double J=1, doub
             H(1,N) = H(N,1) = J*sequence(1);
         }
     }
+    else if (chain == "fib_57" || chain == "fib_59"){
+        Vector sequence;
+        sequence = Not_Fibonacci(N-1, chain);
+   
+        for (int i=1; i<N; i++){
+            H(i,i+1) = H(i+1,i) = J*(1+pow(-sigma,sequence(i)));
+            H(i,i) = Rand(-W,W);
+        }
+        if (boundary == "PBC"){
+            H(1,N) = H(N,1) = J*sequence(1);
+        }
+    }
+
     else if (chain == "sturmian"){
         Vector sequence;
         sequence = Sturmian_Sequence(N-1, theta);
@@ -249,7 +313,7 @@ Matrix Correlation(Matrix H, long N, long P){
     // C.Write();
     // Basis.Write();
 
-    // C.Save("correlation.txt");
+    // C.Save("data/correlation.txt");
     return C;
 }
 
@@ -263,7 +327,7 @@ Vector Gap_vs_N(long minn, long maxn, double W, string boundary, string chain, d
     Vector EGap(maxn-minn+1);
     long j = 0;
     for (int i=minn; j<maxn; i++){
-        if (chain == "fibonacci" || chain == "sturmian"){
+        if (chain == "fibonacci" || chain == "sturmian" || chain == "fib_57" || chain == "fib_59"){
             j = Fibonacci_num(i)+1;
         }
         else{j = i;}
@@ -276,7 +340,7 @@ Vector Gap_vs_N(long minn, long maxn, double W, string boundary, string chain, d
         // std::cout << i << j <<"-------------------------------------------------------------------" << std::endl;
         // Eigen.Write();
     }
-    // EGap.Save("energy_gap.txt");
+    // EGap.Save("data/energy_gap.txt");
     return EGap;
 }
 
@@ -324,7 +388,7 @@ Vector EE_vs_l(long N, Matrix C, string entropy_order = "forward"){
     for (int i=1;i<=N;i++){
         Entropy_vector(i+1) = EE_block(i,N,C,entropy_order);
     }
-    // Entropy_vector.Save("entropy.txt");
+    // Entropy_vector.Save("data/entropy.txt");
     return Entropy_vector;
 }
 
@@ -352,7 +416,7 @@ double Get_IPR(long N, Matrix Basis){
 }
 
 Vector Inverse_participation_ratio(long N, double W, string boundary, string chain, double J=1, double sigma=0.1, double h=1, double theta=0.5, long minf=1, long maxf=16){
-    if (chain == "fibonacci" || chain == "sturmian"){
+    if (chain == "fibonacci" || chain == "sturmian" || chain == "fib_57" || chain == "fib_59"){
         long fib;
         Vector IPR(Fibonacci_num(maxf)+1);
         for (int i=minf;i<=maxf;i++){
