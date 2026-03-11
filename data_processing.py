@@ -534,6 +534,24 @@ def plot_energy_spectrum_vs_sigma(filename):
     else:
         print("No energies found")
 
+def plot_density_of_states(filename):
+    all_energies = parse_multi_vector_file(filename)
+
+    if all_energies:
+        # Take the largest size (last block)
+        energies = all_energies[-1]
+        
+        plt.figure(figsize=(8, 6))
+        plt.hist(energies, bins=50, density=True, alpha=0.7, color='cyan', edgecolor='black')
+        plt.title("Density of States (Largest System Size)")
+        plt.xlabel("Energy $E$")
+        plt.ylabel("Density of States $\\rho(E)$")
+        plt.grid(True, alpha=0.3)
+        plt.savefig("images/density_of_states.png", dpi=300)
+        plt.show()
+    else:
+        print("No energies found")
+
 if __name__ == "__main__":
 
     plot_correlation_matrix("data/correlation.txt")
@@ -549,7 +567,7 @@ if __name__ == "__main__":
     plot_ipr("data/inverse_participation_ratio.txt")
 
     # plot_two_point_correlation("data/correlation.txt")
-
+    plot_density_of_states("data/eigenvalues_f.txt")
     plot_energy_spectrum("data/eigenvalues_f.txt")
     plot_energy_spectrum_vs_sigma("data/eigenvalues_f_sigma.txt")
 

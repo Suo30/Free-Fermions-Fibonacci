@@ -19,7 +19,7 @@ double W = 0;
 long P = N/2;
 
 string boundary = "OBC";   // "PBC", "OBC"
-string chain = "dimerized";   //"uniform", "dimerized", "rainbow", "random", "fibonacci", "sturmian", "fib_57", "fib_59", "fib_711"
+string chain = "fibonacci";   //"uniform", "dimerized", "rainbow", "random", "fibonacci", "sturmian", "fib_57", "fib_59", "fib_711"
 string entropy_order = "forward"; //"forward", "backward", "center"
  
 double J = 1;
@@ -132,7 +132,7 @@ int main()
             H.Diagonalize(Basis, Eigen);
             C.Save(filename,"Hello");
             Eigen.Save(fileenergy);
-            if (chain == "dimerized" || chain == "fibonacci" || chain == "sturmian" || chain == "fib_57" || chain == "fib_59" || chain == "fib_711" || i>=maxf){
+            if ((chain == "dimerized" || chain == "fibonacci" || chain == "sturmian" || chain == "fib_57" || chain == "fib_59" || chain == "fib_711") && i>=maxf){
                 for (int j=0;j<=20;j++){
                     H = Chain_H(fib+1,W,boundary,chain,J,sigma=j*0.5/20,h,theta);
                     H.Diagonalize(Basis, Eigen);
