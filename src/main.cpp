@@ -19,7 +19,7 @@ double W = 0;
 long P = N/2;
 
 string boundary = "OBC";   // "PBC", "OBC"
-string chain = "fibonacci";   //"uniform", "dimerized", "rainbow", "random", "fibonacci", "sturmian", "fib_57", "fib_59", "fib_711"
+string chain = "uniform";   //"uniform", "dimerized", "rainbow", "random", "fibonacci", "sturmian", "fib_57", "fib_59", "fib_711"
 string entropy_order = "forward"; //"forward", "backward", "center"
  
 double J = 1;
@@ -66,6 +66,7 @@ int main()
     Vector Gap(maxn-minn);
     Vector EE(N);
     Vector density(N);
+    Vector Entropy_N(maxn-minn+1);
 
     H = Chain_H(N,W,boundary,chain,J,sigma,h,theta);
     Vector Eigen; Matrix Basis;
@@ -85,6 +86,8 @@ int main()
     EE = EE_vs_l(N,C,entropy_order);
     EE.Save("data/entropy.txt");
 
+    Entropy_N = entropy_vs_N(minn,maxn,W,boundary,chain,J,sigma,h,theta,entropy_order);
+    Entropy_N.Save("data/entropy_vs_N.txt");
     // long fib;
     // for (int i = 0;i<=15;i++){
     //     fib = Fibonacci_num(i);

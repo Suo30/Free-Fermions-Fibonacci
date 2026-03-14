@@ -552,24 +552,53 @@ def plot_density_of_states(filename):
     else:
         print("No energies found")
 
+def plot_entropy_vs_N(filename):
+    try:
+        entropy = np.loadtxt(filename)
+        N = entropy.size
+        print(f"Loaded Entropy vector of size: {N}")
+
+        # Only represent 2p to avoid degeneration
+        entropy = entropy[1::2]
+        x = np.arange(2, N + 1, 2)
+
+        # Filter Data, only keep points where Gap > 0
+        mask = entropy > 1e-10 
+        N_clean = x[mask]
+        entropy_clean = entropy[mask]
+
+        plt.figure(figsize=(8,6))
+        plt.plot(N_clean, entropy_clean, "magenta", label="Entanglement Entropy", markersize=5) 
+        plt.title("Entanglement Entropy vs System Size")
+        plt.xlabel("System Size $N$")
+        plt.ylabel("Entanglement Entropy $S(N)$")
+        plt.grid(True, which="both", linestyle="--", alpha=0.6)
+        plt.legend()
+        plt.show()
+
+    except Exception as e:
+        print(f"Error reading file: {e}")
+        exit()
+
 if __name__ == "__main__":
 
     plot_correlation_matrix("data/correlation.txt")
-    plot_ground_state("data/eigenvectors.txt")
-    plot_density_function("data/density.txt")
+    # plot_ground_state("data/eigenvectors.txt")
+    # plot_density_function("data/density.txt")
 
     # plot_gap_ratio("data/energy_gap_vs_site.txt","data/energy_gap_ratio_vs_site.txt")
     # plot_histogram_gap_ratio("data/energy_gap_ratio_vs_site.txt")
 
     # plot_energy_gap("data/energy_gap.txt")
-    plot_energy_gap("data/energy_gap_s.txt")
+    # plot_energy_gap("data/energy_gap_s.txt")
     # plot_entanglement_entropy("data/entropy.txt")
-    plot_ipr("data/inverse_participation_ratio.txt")
+    # plot_ipr("data/inverse_participation_ratio.txt")
 
     # plot_two_point_correlation("data/correlation.txt")
-    plot_density_of_states("data/eigenvalues_f.txt")
-    plot_energy_spectrum("data/eigenvalues_f.txt")
-    plot_energy_spectrum_vs_sigma("data/eigenvalues_f_sigma.txt")
+    # plot_density_of_states("data/eigenvalues_f.txt")
+    # plot_energy_spectrum("data/eigenvalues_f.txt")
+    # plot_energy_spectrum_vs_sigma("data/eigenvalues_f_sigma.txt")
+    plot_entropy_vs_N("data/entropy_vs_N.txt")
 
     # plot_correlations("correlation_f.txt")
 

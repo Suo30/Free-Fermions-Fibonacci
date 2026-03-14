@@ -454,3 +454,25 @@ Vector Density_Function(long N, Matrix C){
     }
     return density;
 }
+
+Vector entropy_vs_N(long minn, long maxn, double W, string boundary, string chain, double J=1, double sigma=0.1, double h=1, double theta=0.5, string entropy_order = "forward"){
+    Vector Entropy_N(maxn-minn+1);
+    long j = 0;
+    for (int i=minn; j<maxn; i++){
+        if (chain == "fibonacci" || chain == "sturmian" || chain == "fib_57" || chain == "fib_59"){
+            j = Fibonacci_num(i)+1;
+        }
+        else{j = i;}
+        Matrix H(j);
+        if (j%2==0){
+            H = Chain_H(j,W,boundary,chain,J,sigma,h,theta);
+            Matrix C = Correlation(H,j,j/2);
+            Entropy_N(j) = EE_block(j/2,j,C,entropy_order);
+        }
+        
+        // std::cout << i << j <<"-------------------------------------------------------------------" << std::endl;
+        // Eigen.Write();
+    }
+    // EGap.Save("data/energy_gap.txt");
+    return Entropy_N;
+}
