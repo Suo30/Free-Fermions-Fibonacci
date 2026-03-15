@@ -18,7 +18,6 @@ import re
 #     print(f"Error reading file: {e}")
 #     exit()
 
-
 def plot_correlation_matrix(filename = "correlation.txt"):
     try:
         #Load Data
@@ -41,6 +40,49 @@ def plot_correlation_matrix(filename = "correlation.txt"):
         
         # imshow drawing squares using the seismic map, forcing they range to be symmetric for 0 (white) in the middle
         im = plt.imshow(correlation, cmap='seismic', vmin=-limit, vmax=limit, origin='upper')
+
+        # Styling
+        plt.colorbar(im, label="Correlation Intensity")
+        plt.title(f"Correlation Matrix ({rows}x{cols})")
+        plt.xlabel("Site j")
+        plt.ylabel("Site i")
+
+        # Show integers if matrix is small
+        if rows <= 20:
+            plt.xticks(np.arange(cols), np.arange(1, cols+1))
+            plt.yticks(np.arange(rows), np.arange(1, rows+1))
+
+        print("Displaying plot...")
+        plt.show()
+
+
+    # Error protection
+    except Exception as e:
+        print(f"Error reading file: {e}")
+        exit()
+
+def plot_log_correlation_matrix(filename = "correlation.txt"):
+    try:
+        #Load Data
+        correlation = np.loadtxt(filename)
+        # print(correlation)
+
+        rows,cols = correlation.shape
+        print(f"Loaded Matrix: {rows}x{cols}")
+
+        # Setup Color Mapping (Blue-White-Red), 0 perfectly White
+        # To ensure White = 0, we must make vmin and vmax symmetric.
+        max_val = np.max(np.abs(correlation)) # Find the strongest value (positive or negative)
+        if max_val == 0: 
+            max_val = 1.0
+        #Set Maximum intensity
+        limit = max_val
+
+        # Create the Plot
+        plt.figure(figsize=(8, 6)) # Size in inches
+        
+        # imshow drawing squares using the magma map, forcing they range to be symmetric for 0 (white) in the middle
+        im = plt.imshow(correlation, cmap='seismic', origin='upper', norm=colors.SymLogNorm(linthresh=1e-19, vmin=-limit, vmax=limit)) # Logarithmic color scale with a small cutoff to avoid log(0)
 
         # Styling
         plt.colorbar(im, label="Correlation Intensity")
@@ -105,6 +147,41 @@ def plot_energy_gap(filename = "energy_gap.txt"):
         print(f"Error reading file: {e}")
         exit()
 
+def plot_energy_gap_s(filename = "energy_gap_s.txt"):
+    try:
+        # Load data
+        energy_gap = np.loadtxt(filename)
+        length = len(energy_gap)
+        x = np.arange(1,length+1)
+        print(f"Loaded Vector of size: {length}")
+
+        # Only represent 4p+2 to avoid degeneration
+        x = x[1::4]
+        energy_gap = energy_gap[1::4]
+
+        # Filter Data, only keep points where Gap > 0
+        mask = energy_gap > 1e-60 
+        N_clean = x[mask]
+        gaps_clean = energy_gap[mask]
+
+        # Plot Simulation data
+        plt.figure(figsize=(8,6))
+        plt.loglog(N_clean,gaps_clean, "ro-", label = "Simulation Data", markersize = 5)
+        # Style
+        plt.title("Scaling of Energy Gap vs Sigma")
+        plt.xlabel("Sigma ($\sigma$)")
+        plt.ylabel("Energy Gap ($\Delta E$)")
+        plt.grid(True, which="both", linestyle="--", alpha=0.6)
+        plt.legend()
+
+        plt.show()
+
+
+
+    # Error protection
+    except Exception as e:
+        print(f"Error reading file: {e}")
+        exit()
 
 def plot_entanglement_entropy (filename = "entropy.txt"):
     try:
@@ -389,6 +466,20 @@ def plot_ipr(filename):
         N_clean = np.arange(1, N + 1)[mask]
         ipr_clean = ipr_values[mask]
 
+        # 1. Take the natural logarithm of the clean data
+        log_N = np.log(N_clean)
+        log_ipr = np.log(ipr_clean)
+        
+        # 2. Perform a 1st-degree polynomial fit (linear regression)
+        # polyfit returns an array: [slope, intercept]
+        slope, intercept = np.polyfit(log_N, log_ipr, 1)
+        
+        print(f"Calculated IPR scaling exponent (slope): {slope:.4f}")
+        
+        # 3. Generate the data points for the fit line: y = e^(intercept) * x^(slope)
+        ipr_fit = np.exp(intercept) * (N_clean ** slope)
+        
+
         # Plot and stylize
         plt.figure(figsize=(8,6))
         plt.loglog(N_clean, ipr_clean, "purple", label="Inverse Participation Ratio", markersize=5) # PLot every 2nd element
@@ -396,6 +487,9 @@ def plot_ipr(filename):
         plt.xlabel("System Size $N$")
         plt.ylabel("$IPR(N)$")
         plt.grid(True, which="both", linestyle="--", alpha=0.6)
+
+        # 4. Plot the approximation line (dashed black line)
+        plt.loglog(N_clean, ipr_fit, "k--", label=f"Fit: $N^{{{slope:.3f}}}$", linewidth=2, zorder=3)
         plt.legend()
         plt.show()
 
@@ -583,23 +677,26 @@ def plot_entropy_vs_N(filename):
 if __name__ == "__main__":
 
     plot_correlation_matrix("data/correlation.txt")
+    # plot_log_correlation_matrix("data/correlation.txt") #
     # plot_ground_state("data/eigenvectors.txt")
     # plot_density_function("data/density.txt")
 
-    # plot_gap_ratio("data/energy_gap_vs_site.txt","data/energy_gap_ratio_vs_site.txt")
-    # plot_histogram_gap_ratio("data/energy_gap_ratio_vs_site.txt")
+    # # plot_gap_ratio("data/energy_gap_vs_site.txt","data/energy_gap_ratio_vs_site.txt") #
+    # # plot_histogram_gap_ratio("data/energy_gap_ratio_vs_site.txt") #
 
     # plot_energy_gap("data/energy_gap.txt")
-    # plot_energy_gap("data/energy_gap_s.txt")
+    plot_energy_gap_s("data/energy_gap_s.txt")
     # plot_entanglement_entropy("data/entropy.txt")
-    # plot_ipr("data/inverse_participation_ratio.txt")
+    # plot_entropy_vs_N("data/entropy_vs_N.txt")
 
-    # plot_two_point_correlation("data/correlation.txt")
-    # plot_density_of_states("data/eigenvalues_f.txt")
+    plot_ipr("data/inverse_participation_ratio.txt")
+
+    # # plot_two_point_correlation("data/correlation.txt") #
     # plot_energy_spectrum("data/eigenvalues_f.txt")
-    # plot_energy_spectrum_vs_sigma("data/eigenvalues_f_sigma.txt")
-    plot_entropy_vs_N("data/entropy_vs_N.txt")
+    # plot_density_of_states("data/eigenvalues_f.txt")
 
-    # plot_correlations("correlation_f.txt")
+    # plot_energy_spectrum_vs_sigma("data/eigenvalues_f_sigma.txt")
+
+    # # plot_correlations("data/correlation_f.txt")
 
 

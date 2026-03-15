@@ -153,8 +153,6 @@ Vector Not_Fibonacci(long N, string chain){
         sequence2.Append(1);
         sequence2.Append(0);
         sequence2.Append(1);
-        sequence2.Write();
-        std::cout << "Sequence 1: " << std::endl;
     }
 
     else if (chain == "fib_711"){
