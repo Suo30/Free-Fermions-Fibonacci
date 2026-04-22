@@ -185,7 +185,7 @@ Vector Not_Fibonacci(long N, string chain){
         sequence1 = sequence2;
         sequence2 = sequence;
     }
-    sequence.Write();
+    // sequence.Write();
     return sequence;
 }
 
@@ -251,7 +251,7 @@ Matrix Chain_H(long N, double W, string boundary, string chain, double J=1, doub
         sequence = Fibonacci_rabbits(N-1);
    
         for (int i=1; i<N; i++){
-            H(i,i+1) = H(i+1,i) = J*(1+pow(-sigma,sequence(i)));
+            H(i,i+1) = H(i+1,i) = J*(1+sigma*pow(-1,sequence(i)));
             H(i,i) = Rand(-W,W);
         }
         if (boundary == "PBC"){
@@ -263,7 +263,7 @@ Matrix Chain_H(long N, double W, string boundary, string chain, double J=1, doub
         sequence = Not_Fibonacci(N-1, chain);
    
         for (int i=1; i<N; i++){
-            H(i,i+1) = H(i+1,i) = J*(1+pow(-sigma,sequence(i)));
+            H(i,i+1) = H(i+1,i) = J*(1+sigma*pow(-1,sequence(i)));
             H(i,i) = Rand(-W,W);
         }
         if (boundary == "PBC"){
@@ -276,7 +276,7 @@ Matrix Chain_H(long N, double W, string boundary, string chain, double J=1, doub
         sequence = Sturmian_Sequence(N-1, theta);
 
         for (int i=1; i<N; i++){
-            H(i,i+1) = H(i+1,i) = J*(1+pow(-sigma,sequence(i)));
+            H(i,i+1) = H(i+1,i) = J*(1+sigma*pow(-1,sequence(i)));
             H(i,i) = Rand(-W,W);
         }
         if (boundary == "PBC"){
@@ -322,7 +322,7 @@ double Energy_gap(Vector V, long N, long P){
 }
 
 Vector Gap_vs_N(long minn, long maxn, double W, string boundary, string chain, double J=1, double sigma=0.1, double h=1, double theta=0.5){
-    Vector EGap(maxn-minn+1);
+    Vector EGap(maxn);
     long j = 0;
     for (int i=minn; j<maxn; i++){
         if (chain == "fibonacci" || chain == "sturmian" || chain == "fib_57" || chain == "fib_59"){
@@ -418,7 +418,9 @@ Vector Inverse_participation_ratio(long N, double W, string boundary, string cha
         long fib;
         Vector IPR(Fibonacci_num(maxf)+1);
         for (int i=minf;i<=maxf;i++){
+            std::cout << "Entry:" << i << std::endl;
             fib = Fibonacci_num(i);
+            std::cout << "Fibonacci number:" << fib << std::endl;
             if (fib%2==1){
                 Matrix H(fib+1);
                 H = Chain_H(fib+1,W,boundary,chain,J,sigma,h,theta);
@@ -431,7 +433,7 @@ Vector Inverse_participation_ratio(long N, double W, string boundary, string cha
     }
     else{
         Vector IPR(N+1);
-        for (int i=1;i<=N;i++){
+        for (int i=22;i<=N;i++){
             if (i%2==1){
                 Matrix H(i+1);
                 H = Chain_H(i+1,W,boundary,chain,J,sigma,h);
@@ -454,13 +456,14 @@ Vector Density_Function(long N, Matrix C){
 }
 
 Vector entropy_vs_N(long minn, long maxn, double W, string boundary, string chain, double J=1, double sigma=0.1, double h=1, double theta=0.5, string entropy_order = "forward"){
-    Vector Entropy_N(maxn-minn+1);
+    Vector Entropy_N(maxn);
     long j = 0;
     for (int i=minn; j<maxn; i++){
-        if (chain == "fibonacci" || chain == "sturmian" || chain == "fib_57" || chain == "fib_59"){
-            j = Fibonacci_num(i)+1;
-        }
-        else{j = i;}
+        // if (chain == "fibonacci" || chain == "sturmian" || chain == "fib_57" || chain == "fib_59"){
+        //     j = Fibonacci_num(i)+1;
+        // }
+        // else{j = i;}
+        j = i;
         Matrix H(j);
         if (j%2==0){
             H = Chain_H(j,W,boundary,chain,J,sigma,h,theta);

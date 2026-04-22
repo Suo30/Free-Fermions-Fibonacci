@@ -14,7 +14,7 @@ const double pi = 3.14159265358979323846;
 const double phi = (1 + sqrt(5)) / 2; // Golden ratio
 const double e = 2.71828182845904523536; // Euler's number
 
-long N = 90;
+long N = 22;
 double W = 0;
 long P = N/2;
 
@@ -27,8 +27,8 @@ double sigma = 0.3;
 double h = 0.3;
 double theta = 1/e; 
 
-long minn = 1;
-long maxn = 378; //2,"3",'4',6,"9",14,22,"35",'56',90,"145",234,378,"611",'988',1598,"2585",4182
+long minn = 22;
+long maxn = 988; //2,"3",'4',6,"9",14,22,"35",'56',90,"145",234,378,"611",'988',1598,"2585",4182
 long minf = 6;
 long maxf = 16;
 long l = 7;
@@ -68,24 +68,30 @@ int main()
     Vector density(N);
     Vector Entropy_N(maxn-minn+1);
 
+    std::cout << "=====Calculating Chain=====" << std::endl;
     H = Chain_H(N,W,boundary,chain,J,sigma,h,theta);
     Vector Eigen; Matrix Basis;
     H.Diagonalize(Basis,Eigen);
     Basis.Save("data/eigenvectors.txt");
     Eigen.Save("data/eigenvalues.txt");
-    
+
+    std::cout << "=====Correlation Matrix=====" << std::endl;
     C = Correlation(H,N,P);
     C.Save("data/correlation.txt");
 
+    std::cout << "=====Density Function=====" << std::endl;
     density = Density_Function(N,C);
     density.Save("data/density.txt");
 
+    std::cout << "=====Gap vs N=====" << std::endl;
     Gap = Gap_vs_N(minn,maxn,W,boundary,chain,J,sigma,h);
     Gap.Save("data/energy_gap.txt");
 
+    std::cout << "=====Entanglement Entropy=====" << std::endl;
     EE = EE_vs_l(N,C,entropy_order);
     EE.Save("data/entropy.txt");
 
+  std::cout << "=====EE vs system size N=====" << std::endl;
     Entropy_N = entropy_vs_N(minn,maxn,W,boundary,chain,J,sigma,h,theta,entropy_order);
     Entropy_N.Save("data/entropy_vs_N.txt");
     // long fib;
@@ -98,12 +104,13 @@ int main()
     // IPR = Inverse_participation_ratio(N,H);
     // IPR.Save("data/inverse_participation_ratio.txt");
 
-
+    std::cout << "=====Gap vs Sigma=====" << std::endl;
     if (chain == "dimerized" || chain == "fibonacci"){
         Gap_vs_Sigma(0,0.5,N,W,boundary,chain,theta);
         // EGap.Save("data/energy_gap_s.txt");
     }
 
+    std::cout << "=====Gap Ratio=====" << std::endl;
     Vector Gaps(N);
     Vector Gap_Ratio(N);
     Gaps(1) = 0;
@@ -120,6 +127,7 @@ int main()
 
     // Calculating the energy spectrum of Fibonacci for different lengths
     // Save multiple in a single file
+    std::cout << "=====Energy Spectrum and Correlations=====" << std::endl;
     long fib;
     FILE* filename = fopen("data/correlation_f.txt","wt");
     FILE* fileenergy = fopen("data/eigenvalues_f.txt","wt");
@@ -127,6 +135,7 @@ int main()
     for (int i=minf;i<=maxf;i++){
         fib = Fibonacci_num(i);
         if (fib%2==1){
+            std::cout << "Fibonacci number = " << fib << std::endl;
             Matrix H(fib+1);
             Matrix C(fib+1);
             H = Chain_H(fib+1,W,boundary,chain,J,sigma,h,theta);
@@ -137,15 +146,17 @@ int main()
             Eigen.Save(fileenergy);
             if ((chain == "dimerized" || chain == "fibonacci" || chain == "sturmian" || chain == "fib_57" || chain == "fib_59" || chain == "fib_711") && i>=maxf){
                 for (int j=0;j<=20;j++){
-                    H = Chain_H(fib+1,W,boundary,chain,J,sigma=j*0.5/20,h,theta);
+                    H = Chain_H(fib+1,W,boundary,chain,J,sigma=j*0.5/10,h,theta);
                     H.Diagonalize(Basis, Eigen);
                     Eigen.Save(fileenergyvssigma);
                 }
             }
         }
     }
+    std::cout << "=====IPR=====" << std::endl;
     Vector IPR(Fibonacci_num(maxf)+1);
-    IPR = Inverse_participation_ratio(N,W,boundary,chain,J,sigma,h,theta,minf,maxf);
+    IPR = Inverse_participation_ratio(Fibonacci_num(maxf)+1,W,boundary,chain,J,sigma,h,theta,minf,maxf);
+    // IPR.Write();
     IPR.Save("data/inverse_participation_ratio.txt");
 
 
