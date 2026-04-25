@@ -4,7 +4,7 @@ import matplotlib.colors as colors
 import os
 import re
 
-color = "blue"
+color = "green"
 # try:
 #     energy_gap = np.loadtxt("energy_gap.txt")
 #     print(energy_gap)
@@ -140,7 +140,8 @@ def plot_energy_gap(filename = "energy_gap.txt"):
         # Plot Simulation data
         plt.figure(figsize=(8,6))
         plt.loglog(N_clean,gaps_clean, color, label = "Simulation Data", markersize = 5)
-        plt.loglog(N_clean,gap_fit,"k--", label=f"Fit: $N^{{{slope:.3f}}}$, $R^2$ = {r:.4f}", linewidth=2, zorder=3)
+        # Plot the approximation line (dashed black line)
+        # plt.loglog(N_clean,gap_fit,"k--", label=f"Fit: $N^{{{slope:.3f}}}$, $R^2$ = {r:.4f}", linewidth=2, zorder=3)
         # Plot Reference
         # plt.loglog(ref_x, ref_y, 'r--', alpha=0.5, label='Reference $1/N$ (Metal)')
         # Style
@@ -173,12 +174,23 @@ def plot_energy_gap_s(filename = "energy_gap_s.txt"):
 
         # Filter Data, only keep points where Gap > 0
         mask = energy_gap > 1e-60 
-        N_clean = x[mask]
+        d_clean = x[mask]
         gaps_clean = energy_gap[mask]
+
+        # 1. Take the natural logarithm of the clean data
+        log_d = np.log(d_clean)
+        log_gaps = np.log(gaps_clean)
+        # 2. Perform a 1st-degree polynomial fit (linear regression)
+        # polyfit returns an array: [slope, intercept]
+        slope, intercept = np.polyfit(log_d, log_gaps, 1)
+        r = np.corrcoef(log_d,log_gaps)[0,1]**2 
 
         # Plot Simulation data
         plt.figure(figsize=(8,6))
-        plt.loglog(N_clean,gaps_clean, color, label = "Simulation Data", markersize = 5)
+        plt.loglog(d_clean,gaps_clean, color, label = "Simulation Data", markersize = 5)
+        # Plot the approximation line (dashed black line)
+        gap_fit = np.exp(intercept) * (d_clean ** slope)
+        plt.loglog(d_clean,gap_fit,"k--", label=f"Fit: $N^{{{slope:.3f}}}$, $R^2$ = {r:.4f}", linewidth=2, zorder=3)
         # Style
         plt.title("Scaling of Energy Gap vs Sigma")
         plt.xlabel("Sigma ($\sigma$)")
@@ -206,7 +218,7 @@ def plot_entanglement_entropy (filename = "entropy.txt"):
         # Plot and stylize
         plt.figure(figsize=(8,6))
         plt.plot(x,entropy,color,label = "Simulation Entropy", markersize = 5)
-        plt.title(f"Entanglement Entropy ($N = ${l_ent})")
+        plt.title(f"Entanglement Entropy ($N = ${l_ent-1})")
         plt.xlabel("Length $l$")
         plt.ylabel("Entanglement Entropy $S(l)$")
         plt.grid(True, which="both", linestyle= "--", alpha=0.6)
@@ -515,8 +527,9 @@ def plot_ground_state(filename):
     try:
         # Load data
         eigenvectors = np.loadtxt(filename)
-        ground_state = eigenvectors[:][0] # First column is the ground state
-        N = ground_state.size  
+        N = eigenvectors.shape[0] 
+        ground_state = eigenvectors[:,0] # First column is the ground state
+
         print(f"Loaded Ground State vector of size: {N}")
 
         probability_density = np.abs(ground_state)**2
@@ -524,7 +537,7 @@ def plot_ground_state(filename):
         # Plot and stylize
         plt.figure(figsize=(8,6))
         plt.plot(np.arange(1, N + 1), probability_density, color, label="Ground State Amplitude", markersize=5) 
-        plt.title("Ground State Density Matrix")
+        plt.title(f"Ground State Density Matrix ($N={N}$)")
         plt.xlabel("Site Index $i$")
         plt.ylabel("Probability Density $|\psi_0(i)|^2$")
         plt.grid(True, which="both", linestyle="--", alpha=0.6)
@@ -628,7 +641,7 @@ def plot_energy_spectrum_vs_sigma(filename):
             sigma = i * 1 / 20
             N = energies.size
             x_vals = np.full(N, sigma)
-            plt.scatter(x_vals, energies, color, s=4, alpha=0.7, marker='.')
+            plt.scatter(x_vals, energies, color=color, s=4, alpha=0.7, marker='.')
 
         plt.title("Energy Spectrum vs Sigma")
         plt.xlabel("Sigma ($\\sigma$)")
@@ -650,11 +663,11 @@ def plot_density_of_states(filename):
         energies = all_energies[-1]
         x = np.arange(0,2,50)
 
-        rho = lambda x: (1/(2*np.pi))/np.sqrt((1-(x/(2))**2))
+        # rho = lambda x: (1/(2*np.pi))/np.sqrt((1-(x/(2))**2))
         
         plt.figure(figsize=(8, 6))
         plt.hist(energies, color=color, bins=50, density=True, alpha=0.7, edgecolor='black', label="Simulation DOS")
-        plt.plot(energies, rho(energies), "k--", linewidth=2, zorder=3, label="Theoretical distribution")
+        # plt.plot(energies, rho(energies), "k--", linewidth=2, zorder=3, label="Theoretical distribution")
         plt.title("Density of States N=" + str(energies.size))
         plt.xlabel("Energy $E$")
         plt.ylabel("Density of States $\\rho(E)$")
@@ -694,6 +707,27 @@ def plot_entropy_vs_N(filename):
         print(f"Error reading file: {e}")
         exit()
 
+def plot_zero_energy_edge_states(filename):
+    try:
+        eigenvectors = np.loadtxt(filename)
+        N = eigenvectors.shape[0]
+        print(f"Loaded Eigenvectors of size: {eigenvectors.shape}")
+
+        zero_energy_state = eigenvectors[:, N//2] # Assuming the middle column corresponds to the zero-energy state
+        probability_density = np.abs(zero_energy_state)**2
+
+        plt.figure(figsize=(8,6))
+        plt.plot(np.arange(1, N + 1), probability_density, color, label="Zero-Energy State Density", markersize=5) 
+        plt.title("Zero-Energy Edge State Density")
+        plt.xlabel("Site Index $i$")
+        plt.ylabel("Probability Density $|\psi_{edge}(i)|^2$")
+        plt.grid(True, which="both", linestyle="--", alpha=0.6)
+        plt.legend()
+        plt.show()
+    except Exception as e:
+        print(f"Error reading file: {e}")
+        exit()
+
 if __name__ == "__main__":
 
     plot_correlation_matrix("data/correlation.txt")
@@ -716,5 +750,7 @@ if __name__ == "__main__":
     plot_density_of_states("data/eigenvalues_f.txt")
 
     plot_energy_spectrum_vs_sigma("data/eigenvalues_f_sigma.txt")
+
+    plot_zero_energy_edge_states("data/eigenvectors.txt")
 
     # # plot_correlations("data/correlation_f.txt")
