@@ -174,7 +174,7 @@ def plot_energy_gap_s(filename = "energy_gap_s.txt"):
 
         # Filter Data, only keep points where Gap > 0
         mask = energy_gap > 1e-60 
-        d_clean = x[mask]
+        d_clean = x[mask]/10
         gaps_clean = energy_gap[mask]
 
         # 1. Take the natural logarithm of the clean data
@@ -192,8 +192,8 @@ def plot_energy_gap_s(filename = "energy_gap_s.txt"):
         gap_fit = np.exp(intercept) * (d_clean ** slope)
         plt.loglog(d_clean,gap_fit,"k--", label=f"Fit: $N^{{{slope:.3f}}}$, $R^2$ = {r:.4f}", linewidth=2, zorder=3)
         # Style
-        plt.title("Scaling of Energy Gap vs Sigma")
-        plt.xlabel("Sigma ($\sigma$)")
+        plt.title("Scaling of Energy Gap vs delta")
+        plt.xlabel("delta ($\delta$)")
         plt.ylabel("Energy Gap ($\Delta E$)")
         plt.grid(True, which="both", linestyle="--", alpha=0.6)
         plt.legend()
@@ -515,7 +515,8 @@ def plot_ipr(filename):
         plt.grid(True, which="both", linestyle="--", alpha=0.6)
 
         # 4. Plot the approximation line (dashed black line)
-        plt.loglog(N_clean, ipr_fit, "k--", label=f"Fit: $N^{{{slope:.3f}}}, $R^2$ = {r:.3f}$", linewidth=2, zorder=3)
+        # plt.loglog(N_clean, ipr_fit, "k--", label=f"Fit: $N^{{{slope:.3f}}}, $R^2$ = {r:.3f}$", linewidth=2, zorder=3)
+        
         plt.legend()
         plt.show()
 
@@ -537,7 +538,7 @@ def plot_ground_state(filename):
         # Plot and stylize
         plt.figure(figsize=(8,6))
         plt.plot(np.arange(1, N + 1), probability_density, color, label="Ground State Amplitude", markersize=5) 
-        plt.title(f"Ground State Density Matrix ($N={N}$)")
+        plt.title(f"Ground State Probability Density ($N={N}$)")
         plt.xlabel("Site Index $i$")
         plt.ylabel("Probability Density $|\psi_0(i)|^2$")
         plt.grid(True, which="both", linestyle="--", alpha=0.6)
@@ -629,28 +630,28 @@ def plot_density_function(filename):
         print(f"Error reading file: {e}")
         exit()
 
-def plot_energy_spectrum_vs_sigma(filename):
+def plot_energy_spectrum_vs_delta(filename):
     all_energies = parse_multi_vector_file(filename)
 
     if all_energies:
         plt.figure(figsize=(10, 7))
         
-        print(f"Found {len(all_energies)} sigma values. Plotting...")
+        print(f"Found {len(all_energies)} delta values. Plotting...")
 
         for i, energies in enumerate(all_energies):
-            sigma = i * 1 / 20
+            delta = i * 1 / 20
             N = energies.size
-            x_vals = np.full(N, sigma)
+            x_vals = np.full(N, delta)
             plt.scatter(x_vals, energies, color=color, s=4, alpha=0.7, marker='.')
 
-        plt.title("Energy Spectrum vs Sigma")
-        plt.xlabel("Sigma ($\\sigma$)")
+        plt.title("Energy Spectrum vs delta")
+        plt.xlabel("delta ($\\delta$)")
         plt.ylabel("Energy Levels ($E_k$)")
         plt.grid(True, which='both', axis='x', linestyle='--', alpha=0.4)
         plt.grid(True, which='major', axis='y', linestyle='-', alpha=0.2)
 
-        plt.savefig("images/spectrum_vs_sigma.png", dpi=300)
-        print("Plot saved to spectrum_vs_sigma.png")
+        plt.savefig("images/spectrum_vs_delta.png", dpi=300)
+        print("Plot saved to spectrum_vs_delta.png")
         plt.show()
     else:
         print("No energies found")
@@ -749,7 +750,7 @@ if __name__ == "__main__":
     plot_energy_spectrum("data/eigenvalues_f.txt")
     plot_density_of_states("data/eigenvalues_f.txt")
 
-    plot_energy_spectrum_vs_sigma("data/eigenvalues_f_sigma.txt")
+    plot_energy_spectrum_vs_delta("data/eigenvalues_f_sigma.txt")
 
     plot_zero_energy_edge_states("data/eigenvectors.txt")
 

@@ -19,7 +19,7 @@ double W = 0;
 long P = N/2;
 
 string boundary = "OBC";   // "PBC", "OBC"
-string chain = "dimerized";   //"uniform", "dimerized", "rainbow", "random", "fibonacci", "sturmian", "fib_57", "fib_59", "fib_711"
+string chain = "rainbow";   //"uniform", "dimerized", "rainbow", "random", "fibonacci", "sturmian", "fib_57", "fib_59", "fib_711"
 string entropy_order = "forward"; //"forward", "backward", "center"
  
 double J = 1;
@@ -37,14 +37,14 @@ long l = 7;
                             Problem Variables
  -----------------------------------------------------------------------------*/
 Vector Gap_vs_Sigma(double mins, double maxs, long N, double W, string boundary, string chain, double theta){
-    Vector EGap(101);
-    for (int i=0; i<=100; i++){
+    Vector EGap(10);
+    for (int i=1; i<=10; i++){
         Matrix H(N);
-        H = Chain_H(N,W,boundary,chain,sigma=i*maxs/100,theta=theta);
+        H = Chain_H(N,W,boundary,chain,i*maxs/10,h,theta);
         Vector Eigen; Matrix Basis;
         H.Diagonalize(Basis,Eigen);
         // std::cout << i<<"-------------------------------------------------------------------" << std::endl;
-        EGap(i+1) = Energy_gap(Eigen, N, N/2);
+        EGap(i) = Energy_gap(Eigen, N, N/2);
         // Eigen.Write();
     }
     EGap.Save("data/energy_gap_s.txt");
@@ -72,6 +72,7 @@ int main()
     H = Chain_H(N,W,boundary,chain,J,sigma,h,theta);
     Vector Eigen; Matrix Basis;
     H.Diagonalize(Basis,Eigen);
+
     Basis.Save("data/eigenvectors.txt");
     Eigen.Save("data/eigenvalues.txt");
 
@@ -146,7 +147,7 @@ int main()
             Eigen.Save(fileenergy);
             if ((chain == "dimerized" || chain == "fibonacci" || chain == "sturmian" || chain == "fib_57" || chain == "fib_59" || chain == "fib_711") && i>=maxf){
                 for (int j=0;j<=20;j++){
-                    H = Chain_H(fib+1,W,boundary,chain,J,sigma=j*0.5/10,h,theta);
+                    H = Chain_H(fib+1,W,boundary,chain,J,sigma=j*0.5/10,h=h,theta=theta);
                     H.Diagonalize(Basis, Eigen);
                     Eigen.Save(fileenergyvssigma);
                 }
@@ -160,15 +161,15 @@ int main()
     IPR.Save("data/inverse_participation_ratio.txt");
 
 
-    // double winsize = 800;
-    // EX_Start(50,50,winsize,winsize);
-    // // --- TEST 1: Power Law Decay ---
-    // // On a log-x plot, 1/x looks curved, but we will test 1000 points
+//     double winsize = 800;
+//     EX_Start(50,50,winsize,winsize);
+//     // --- TEST 1: Power Law Decay ---
+//     // On a log-x plot, 1/x looks curved, but we will test 1000 points
     
-    // std::cout << "Displaying Log-X Plot..." << std::endl;
-    // Draw_Vector_LogScale(Gap, 0, 0, winsize, winsize);
+//     std::cout << "Displaying Log-X Plot..." << std::endl;
+//     Draw_Vector_LogScale(Gap, 0, 0, winsize, winsize);
 
-    // EX_Read_Key();
+//     EX_Read_Key();
 
 
 

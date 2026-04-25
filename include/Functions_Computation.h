@@ -208,17 +208,17 @@ Matrix Chain_H(long N, double W, string boundary, string chain, double J=1, doub
         // double J1 = 1;
         // double J2 = 0;
         for (int i=1;i<N;i++){
-            if(i%2==0){
-                H(i+1,i) = H(i,i+1) = -J2;
+            if(i%2==1){
+                H(i+1,i) = H(i,i+1) = -J1;
             }
             else{
-                H(i+1,1) = H(i,i+1) = -J1;
+                H(i+1,i) = H(i,i+1) = -J2;
             }
             H(i,i) = Rand(-W,W);
         }
         H(N,N) = Rand(-W,W);
         if (boundary == "PBC"){
-            H(1,N) = H(N,1) -J2;
+            H(1,N) = H(N,1) = -J2;
         }
     }
     else if (chain == "rainbow"){
