@@ -4,7 +4,7 @@ import matplotlib.colors as colors
 import os
 import re
 
-color = "green"
+color = "red"
 # try:
 #     energy_gap = np.loadtxt("energy_gap.txt")
 #     print(energy_gap)
@@ -139,7 +139,7 @@ def plot_energy_gap(filename = "energy_gap.txt"):
 
         # Plot Simulation data
         plt.figure(figsize=(8,6))
-        plt.loglog(N_clean,gaps_clean, color, label = "Simulation Data", markersize = 5)
+        plt.loglog(N_clean,gaps_clean, color, label = "Simulation Data", markersize = 5, marker=".")
         # Plot the approximation line (dashed black line)
         # plt.loglog(N_clean,gap_fit,"k--", label=f"Fit: $N^{{{slope:.3f}}}$, $R^2$ = {r:.4f}", linewidth=2, zorder=3)
         # Plot Reference
@@ -187,10 +187,10 @@ def plot_energy_gap_s(filename = "energy_gap_s.txt"):
 
         # Plot Simulation data
         plt.figure(figsize=(8,6))
-        plt.loglog(d_clean,gaps_clean, color, label = "Simulation Data", markersize = 5)
+        plt.loglog(d_clean,gaps_clean, color, label = "Simulation Data", markersize = 5, marker=".")
         # Plot the approximation line (dashed black line)
         gap_fit = np.exp(intercept) * (d_clean ** slope)
-        plt.loglog(d_clean,gap_fit,"k--", label=f"Fit: $N^{{{slope:.3f}}}$, $R^2$ = {r:.4f}", linewidth=2, zorder=3)
+        plt.loglog(d_clean,gap_fit,"k--", label=f"Fit: $\delta^{{{slope:.3f}}}$, $R^2$ = {r:.4f}", linewidth=2, zorder=3)
         # Style
         plt.title("Scaling of Energy Gap vs delta")
         plt.xlabel("delta ($\delta$)")
@@ -217,7 +217,7 @@ def plot_entanglement_entropy (filename = "entropy.txt"):
 
         # Plot and stylize
         plt.figure(figsize=(8,6))
-        plt.plot(x,entropy,color,label = "Simulation Entropy", markersize = 5)
+        plt.plot(x,entropy,color,label = "Simulation Entropy", markersize = 5, marker=".")
         plt.title(f"Entanglement Entropy ($N = ${l_ent-1})")
         plt.xlabel("Length $l$")
         plt.ylabel("Entanglement Entropy $S(l)$")
@@ -508,7 +508,7 @@ def plot_ipr(filename):
 
         # Plot and stylize
         plt.figure(figsize=(8,6))
-        plt.loglog(N_clean, ipr_clean, color, label="Inverse Participation Ratio", markersize=5) # PLot every 2nd element
+        plt.loglog(N_clean, ipr_clean, color, label="Inverse Participation Ratio", markersize=5, marker=".") # PLot every 2nd element
         plt.title("Inverse Participation Ratio")
         plt.xlabel("System Size $N$")
         plt.ylabel("$IPR(N)$")
@@ -516,7 +516,7 @@ def plot_ipr(filename):
 
         # 4. Plot the approximation line (dashed black line)
         # plt.loglog(N_clean, ipr_fit, "k--", label=f"Fit: $N^{{{slope:.3f}}}, $R^2$ = {r:.3f}$", linewidth=2, zorder=3)
-        
+
         plt.legend()
         plt.show()
 
@@ -537,7 +537,7 @@ def plot_ground_state(filename):
 
         # Plot and stylize
         plt.figure(figsize=(8,6))
-        plt.plot(np.arange(1, N + 1), probability_density, color, label="Ground State Amplitude", markersize=5) 
+        plt.plot(np.arange(1, N + 1), probability_density, color, label="Ground State Amplitude", markersize=5, marker=".") 
         plt.title(f"Ground State Probability Density ($N={N}$)")
         plt.xlabel("Site Index $i$")
         plt.ylabel("Probability Density $|\psi_0(i)|^2$")
@@ -752,6 +752,6 @@ if __name__ == "__main__":
 
     plot_energy_spectrum_vs_delta("data/eigenvalues_f_sigma.txt")
 
-    plot_zero_energy_edge_states("data/eigenvectors.txt")
+    # plot_zero_energy_edge_states("data/eigenvectors.txt")
 
     # # plot_correlations("data/correlation_f.txt")

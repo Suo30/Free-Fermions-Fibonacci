@@ -14,20 +14,20 @@ const double pi = 3.14159265358979323846;
 const double phi = (1 + sqrt(5)) / 2; // Golden ratio
 const double e = 2.71828182845904523536; // Euler's number
 
-long N = 22;
+long N = 234;
 double W = 0;
 long P = N/2;
 
 string boundary = "OBC";   // "PBC", "OBC"
-string chain = "rainbow";   //"uniform", "dimerized", "rainbow", "random", "fibonacci", "sturmian", "fib_57", "fib_59", "fib_711"
+string chain = "fibonacci";   //"uniform", "dimerized", "rainbow", "random", "fibonacci", "sturmian", "fib_57", "fib_59", "fib_711"
 string entropy_order = "forward"; //"forward", "backward", "center"
  
 double J = 1;
 double sigma = 0.3;
-double h = 0.3;
+double h = 0.6;
 double theta = 1/e; 
 
-long minn = 22;
+long minn = 5;
 long maxn = 988; //2,"3",'4',6,"9",14,22,"35",'56',90,"145",234,378,"611",'988',1598,"2585",4182
 long minf = 6;
 long maxf = 16;
@@ -59,7 +59,7 @@ Vector Gap_vs_Sigma(double mins, double maxs, long N, double W, string boundary,
  -----------------------------------------------------------------------------*/
 
 int main()
-{   Rand_Open(0); 
+{   Rand_Open(1); 
 
     Matrix C(N);
     Matrix H(N);
@@ -72,7 +72,7 @@ int main()
     H = Chain_H(N,W,boundary,chain,J,sigma,h,theta);
     Vector Eigen; Matrix Basis;
     H.Diagonalize(Basis,Eigen);
-
+    H.Write();
     Basis.Save("data/eigenvectors.txt");
     Eigen.Save("data/eigenvalues.txt");
 
@@ -104,8 +104,8 @@ int main()
     // Vector IPR(N);
     // IPR = Inverse_participation_ratio(N,H);
     // IPR.Save("data/inverse_participation_ratio.txt");
+    
 
-    std::cout << "=====Gap vs Sigma=====" << std::endl;
     if (chain == "dimerized" || chain == "fibonacci"){
         Gap_vs_Sigma(0,0.5,N,W,boundary,chain,theta);
         // EGap.Save("data/energy_gap_s.txt");
