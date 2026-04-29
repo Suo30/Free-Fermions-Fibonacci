@@ -263,7 +263,7 @@ Matrix Chain_H(long N, double W, string boundary, string chain, double J=1, doub
         sequence = Not_Fibonacci(N-1, chain);
    
         for (int i=1; i<N; i++){
-            H(i,i+1) = H(i+1,i) = J*(1+sigma*pow(-1,sequence(i)));
+            H(i,i+1) = H(i+1,i) = J*(1-sigma*pow(-1,sequence(i)));
             H(i,i) = Rand(-W,W);
         }
         if (boundary == "PBC"){
@@ -276,7 +276,7 @@ Matrix Chain_H(long N, double W, string boundary, string chain, double J=1, doub
         sequence = Sturmian_Sequence(N-1, theta);
 
         for (int i=1; i<N; i++){
-            H(i,i+1) = H(i+1,i) = J*(1+sigma*pow(-1,sequence(i)));
+            H(i,i+1) = H(i+1,i) = J*(1-sigma*pow(-1,sequence(i)));
             H(i,i) = Rand(-W,W);
         }
         if (boundary == "PBC"){

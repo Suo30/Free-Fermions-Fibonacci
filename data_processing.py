@@ -1,10 +1,11 @@
+import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import os
 import re
 
-color = "red"
+color = "orange"
 # try:
 #     energy_gap = np.loadtxt("energy_gap.txt")
 #     print(energy_gap)
@@ -39,7 +40,7 @@ def plot_correlation_matrix(filename = "correlation.txt"):
         plt.figure(figsize=(8, 6)) # Size in inches
         
         # imshow drawing squares using the seismic map, forcing they range to be symmetric for 0 (white) in the middle
-        im = plt.imshow(correlation, cmap='seismic', vmin=-limit, vmax=limit, origin='upper')
+        im = plt.imshow(correlation, cmap='seismic', origin='upper', norm=colors.SymLogNorm(linthresh=1e-19, vmin=-limit, vmax=limit)) # Logarithmic color scale with a small cutoff to avoid log(0)
 
         # Styling
         plt.colorbar(im, label="Correlation Intensity $C_{ij}$")
@@ -139,7 +140,7 @@ def plot_energy_gap(filename = "energy_gap.txt"):
 
         # Plot Simulation data
         plt.figure(figsize=(8,6))
-        plt.loglog(N_clean,gaps_clean, color, label = "Simulation Data", markersize = 5, marker=".")
+        plt.loglog(N_clean,gaps_clean, color, label = "Simulation Data", markersize = 7, marker=".")
         # Plot the approximation line (dashed black line)
         # plt.loglog(N_clean,gap_fit,"k--", label=f"Fit: $N^{{{slope:.3f}}}$, $R^2$ = {r:.4f}", linewidth=2, zorder=3)
         # Plot Reference
@@ -187,7 +188,7 @@ def plot_energy_gap_s(filename = "energy_gap_s.txt"):
 
         # Plot Simulation data
         plt.figure(figsize=(8,6))
-        plt.loglog(d_clean,gaps_clean, color, label = "Simulation Data", markersize = 5, marker=".")
+        plt.loglog(d_clean,gaps_clean, color, label = "Simulation Data", markersize = 7, marker=".")
         # Plot the approximation line (dashed black line)
         gap_fit = np.exp(intercept) * (d_clean ** slope)
         plt.loglog(d_clean,gap_fit,"k--", label=f"Fit: $\delta^{{{slope:.3f}}}$, $R^2$ = {r:.4f}", linewidth=2, zorder=3)
@@ -217,7 +218,7 @@ def plot_entanglement_entropy (filename = "entropy.txt"):
 
         # Plot and stylize
         plt.figure(figsize=(8,6))
-        plt.plot(x,entropy,color,label = "Simulation Entropy", markersize = 5, marker=".")
+        plt.plot(x,entropy,color,label = "Simulation Entropy", markersize = 7, marker=".")
         plt.title(f"Entanglement Entropy ($N = ${l_ent-1})")
         plt.xlabel("Length $l$")
         plt.ylabel("Entanglement Entropy $S(l)$")
@@ -432,7 +433,7 @@ def plot_all_energies(matrices):
         
         # Scatter plot for this specific system size
         # s=4 is the dot size, alpha=0.7 makes dense areas look darker
-        plt.scatter(x_vals, energies, color=color, s=4, alpha=0.7, marker='.')
+        plt.scatter(x_vals, energies, color=color, s=7, alpha=0.7, marker='.')
 
     # Styling
     plt.title("Energy Spectrum")
@@ -463,8 +464,8 @@ def plot_two_point_correlation(filename):
 
         # Plot and stylize
         plt.figure(figsize=(8,6))
-        plt.loglog(np.arange(1, N + 1,2), two_point, "green", label="Two-Point Correlation", markersize=5) # PLot every 2nd element
-        # plt.loglog(np.arange(1, N + 1), two_point, "green", label="Two-Point Correlation", markersize=5)
+        plt.loglog(np.arange(1, N + 1,2), two_point, "green", label="Two-Point Correlation", markersize=7) # PLot every 2nd element
+        # plt.loglog(np.arange(1, N + 1), two_point, "green", label="Two-Point Correlation", markersize=7)
         plt.title("Two-Point Correlation Function")
         plt.xlabel("Distance $r$")
         plt.ylabel("Correlation $C(r)$")
@@ -508,14 +509,14 @@ def plot_ipr(filename):
 
         # Plot and stylize
         plt.figure(figsize=(8,6))
-        plt.loglog(N_clean, ipr_clean, color, label="Inverse Participation Ratio", markersize=5, marker=".") # PLot every 2nd element
+        plt.loglog(N_clean, ipr_clean, color, label="Inverse Participation Ratio", markersize=7, marker=".") # PLot every 2nd element
         plt.title("Inverse Participation Ratio")
         plt.xlabel("System Size $N$")
         plt.ylabel("$IPR(N)$")
         plt.grid(True, which="both", linestyle="--", alpha=0.6)
 
         # 4. Plot the approximation line (dashed black line)
-        # plt.loglog(N_clean, ipr_fit, "k--", label=f"Fit: $N^{{{slope:.3f}}}, $R^2$ = {r:.3f}$", linewidth=2, zorder=3)
+        plt.loglog(N_clean, ipr_fit, "k--", label=f"Fit: $N^{{{slope:.3f}}}, $R^2$ = {r:.3f}$", linewidth=2, zorder=3)
 
         plt.legend()
         plt.show()
@@ -537,7 +538,7 @@ def plot_ground_state(filename):
 
         # Plot and stylize
         plt.figure(figsize=(8,6))
-        plt.plot(np.arange(1, N + 1), probability_density, color, label="Ground State Amplitude", markersize=5, marker=".") 
+        plt.plot(np.arange(1, N + 1), probability_density, color, label="Ground State Amplitude", markersize=7, marker=".") 
         plt.title(f"Ground State Probability Density ($N={N}$)")
         plt.xlabel("Site Index $i$")
         plt.ylabel("Probability Density $|\psi_0(i)|^2$")
@@ -559,8 +560,8 @@ def plot_gap_ratio(filename1,filename2):
 
         # Plot and stylize
         plt.figure(figsize=(8,6))
-        plt.plot(np.arange(1, N + 1), gap_ratio, "cyan", label="Gap Ratio", markersize=5) 
-        plt.plot(np.arange(1, N + 1), gap_energy, "magenta", label="Energy Gap)", markersize=5) 
+        plt.plot(np.arange(1, N + 1), gap_ratio, "cyan", label="Gap Ratio", markersize=7) 
+        plt.plot(np.arange(1, N + 1), gap_energy, "magenta", label="Energy Gap)", markersize=7) 
 
         # Plot theoretical Poisson distribution: P(r) = 2 / (1+r)^2
         # r_theory = np.linspace(0, N, 100*N) # More points for smoother curve
@@ -618,7 +619,7 @@ def plot_density_function(filename):
         print(f"Loaded Density vector of size: {N}")
 
         plt.figure(figsize=(8,6))
-        plt.plot(np.arange(1, N + 1), density, "brown", label="Density Function", markersize=5) 
+        plt.plot(np.arange(1, N + 1), density, "brown", label="Density Function", markersize=7) 
         plt.title("Density Function")
         plt.xlabel("Site Index")
         plt.ylabel("Density $\\rho(i)$")
@@ -642,7 +643,7 @@ def plot_energy_spectrum_vs_delta(filename):
             delta = i * 1 / 20
             N = energies.size
             x_vals = np.full(N, delta)
-            plt.scatter(x_vals, energies, color=color, s=4, alpha=0.7, marker='.')
+            plt.scatter(x_vals, energies, color=color, s=7, alpha=0.7, marker='.')
 
         plt.title("Energy Spectrum vs delta")
         plt.xlabel("delta ($\\delta$)")
@@ -696,7 +697,7 @@ def plot_entropy_vs_N(filename):
         entropy_clean = entropy[mask]
 
         plt.figure(figsize=(8,6))
-        plt.plot(N_clean, entropy_clean, color, label="Entanglement Entropy", markersize=5) 
+        plt.plot(N_clean, entropy_clean, color, label="Entanglement Entropy", markersize=7) 
         plt.title("Entanglement Entropy vs System Size")
         plt.xlabel("System Size $N$")
         plt.ylabel("Entanglement Entropy $S(N)$")
@@ -718,7 +719,7 @@ def plot_zero_energy_edge_states(filename):
         probability_density = np.abs(zero_energy_state)**2
 
         plt.figure(figsize=(8,6))
-        plt.plot(np.arange(1, N + 1), probability_density, color, label="Zero-Energy State Density", markersize=5) 
+        plt.plot(np.arange(1, N + 1), probability_density, color, label="Zero-Energy State Density", markersize=7) 
         plt.title("Zero-Energy Edge State Density")
         plt.xlabel("Site Index $i$")
         plt.ylabel("Probability Density $|\psi_{edge}(i)|^2$")
@@ -734,6 +735,7 @@ if __name__ == "__main__":
     plot_correlation_matrix("data/correlation.txt")
     # plot_log_correlation_matrix("data/correlation.txt") #
     plot_ground_state("data/eigenvectors.txt")
+    plot_zero_energy_edge_states("data/eigenvectors.txt")
     # plot_density_function("data/density.txt")
 
     # # plot_gap_ratio("data/energy_gap_vs_site.txt","data/energy_gap_ratio_vs_site.txt") #
@@ -751,7 +753,5 @@ if __name__ == "__main__":
     plot_density_of_states("data/eigenvalues_f.txt")
 
     plot_energy_spectrum_vs_delta("data/eigenvalues_f_sigma.txt")
-
-    # plot_zero_energy_edge_states("data/eigenvectors.txt")
 
     # # plot_correlations("data/correlation_f.txt")

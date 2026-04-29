@@ -14,7 +14,7 @@ const double pi = 3.14159265358979323846;
 const double phi = (1 + sqrt(5)) / 2; // Golden ratio
 const double e = 2.71828182845904523536; // Euler's number
 
-long N = 234;
+long N = 378;
 double W = 0;
 long P = N/2;
 
@@ -28,9 +28,9 @@ double h = 0.6;
 double theta = 1/e; 
 
 long minn = 5;
-long maxn = 988; //2,"3",'4',6,"9",14,22,"35",'56',90,"145",234,378,"611",'988',1598,"2585",4182
+long maxn = 1598; //2,"3",'4',6,"9",14,22,"35",'56',90,"145",234,378,"611",'988',1598,"2585",4182
 long minf = 6;
-long maxf = 16;
+long maxf = 17;
 long l = 7;
 
  /*-----------------------------------------------------------------------------
@@ -92,9 +92,12 @@ int main()
     EE = EE_vs_l(N,C,entropy_order);
     EE.Save("data/entropy.txt");
 
-  std::cout << "=====EE vs system size N=====" << std::endl;
-    Entropy_N = entropy_vs_N(minn,maxn,W,boundary,chain,J,sigma,h,theta,entropy_order);
-    Entropy_N.Save("data/entropy_vs_N.txt");
+//   std::cout << "=====EE vs system size N=====" << std::endl;
+//     Entropy_N = entropy_vs_N(minn,maxn,W,boundary,chain,J,sigma,h,theta,entropy_order
+//     );
+//     Entropy_N.Save("data/entropy_vs_N.txt");
+
+
     // long fib;
     // for (int i = 0;i<=15;i++){
     //     fib = Fibonacci_num(i);
@@ -147,7 +150,7 @@ int main()
             Eigen.Save(fileenergy);
             if ((chain == "dimerized" || chain == "fibonacci" || chain == "sturmian" || chain == "fib_57" || chain == "fib_59" || chain == "fib_711") && i>=maxf){
                 for (int j=0;j<=20;j++){
-                    H = Chain_H(fib+1,W,boundary,chain,J,sigma=j*0.5/10,h=h,theta=theta);
+                    H = Chain_H(fib+1,W,boundary,chain,J,j*0.5/10,h,theta);
                     H.Diagonalize(Basis, Eigen);
                     Eigen.Save(fileenergyvssigma);
                 }
